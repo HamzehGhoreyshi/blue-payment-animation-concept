@@ -22,6 +22,7 @@ interface Particle {
   r4: number;
   size: number;
   blue: boolean;
+  ink: string; // the glyph's own colour: a grain starts as a piece of the letter
 }
 
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -58,10 +59,16 @@ export class ParticleEngine {
   resize() {
     const c = this.canvas;
     if (!c) return;
+    // Size the pixel buffer from the canvas's LAYOUT size (offsetWidth), not its on-screen
+    // size: the phone frame is CSS-scaled, and using the scaled size stretched every grain
+    // away from the digit it belongs to. Sharpness follows the on-screen scale × DPR.
     const r = c.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    c.width = Math.round(r.width * dpr);
-    c.height = Math.round(r.height * dpr);
+    const lw = c.offsetWidth || r.width;
+    const lh = c.offsetHeight || r.height;
+    const shown = r.width / (lw || 1); // frame scale
+    const dpr = Math.min(window.devicePixelRatio || 1, 2) * Math.max(shown, 0.5);
+    c.width = Math.round(lw * dpr);
+    c.height = Math.round(lh * dpr);
     this.ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
@@ -97,19 +104,28 @@ export class ParticleEngine {
       o.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
       o.fillStyle = '#fff';
       o.textAlign = 'center';
-      o.textBaseline = 'middle';
       o.direction = (el.getAttribute('dir') as CanvasDirection) || 'rtl';
-      o.fillText(el.textContent || '', w / 2, h / 2 + 1);
+      // Put the canvas text on the same baseline the browser uses for the real text:
+      // the font's box (ascent + descent) is centred in the line box, baseline at its ascent.
+      // ('middle' is off by many px for Vazirmatn, whose box overflows the line height.)
+      o.textBaseline = 'alphabetic';
+      const text = el.textContent || '';
+      const fm = o.measureText(text);
+      const lineH = rect.height / scale;
+      const baseline = 4 + (lineH - (fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent)) / 2 + fm.fontBoundingBoxAscent;
+      o.fillText(text, w / 2, baseline);
       const data = o.getImageData(0, 0, w * k, h * k).data;
       const ox = (rect.left - host.left) / scale - 4;
       const oy = (rect.top - host.top) / scale - 4;
-      const step = 1.6;
+      // sample every pixel of the glyphs, so the crumbling edge is dense, not sparse
+      const step = 1;
+      const ink = cs.color;
       for (let y = 0; y < h; y += step) {
         for (let x = 0; x < w; x += step) {
           const i = (Math.floor(y * k) * w * k + Math.floor(x * k)) * 4 + 3;
           if (data[i] > 110) {
             const px = ox + x + (Math.random() - 0.5) * 0.6;
-            out.push({ x: px, y: oy + y, th: 0, r1: Math.random(), r2: Math.random(), r3: Math.random(), r4: Math.random(), size: 1.1 + Math.random() * 1.1, blue: Math.random() < this.mix });
+            out.push({ x: px, y: oy + y, th: 0, r1: Math.random(), r2: Math.random(), r3: Math.random(), r4: Math.random(), size: 1.0 + Math.random() * 0.9, blue: Math.random() < this.mix, ink });
           }
         }
       }
@@ -142,7 +158,7 @@ export class ParticleEngine {
     this.masked.forEach((el, i) => {
       const r = this.rects[i];
       const gone = r ? edge - r.left : 0; // px hidden from this element's left side
-      const m = this.p <= 0 ? '' : `linear-gradient(to right, transparent ${gone}px, #000 ${gone + 18}px)`;
+      const m = this.p <= 0 ? '' : `linear-gradient(to right, transparent ${gone}px, #000 ${gone + 8}px)`;
       el.style.maskImage = m;
       el.style.webkitMaskImage = m;
     });
@@ -221,7 +237,8 @@ export class ParticleEngine {
       const e = smooth(f);
       // dissolve: drift ahead of the thumb (rightwards), lift and scatter
       let x = q.x + (20 + q.r1 * 110) * e;
-      let y = q.y + ((q.r2 - 0.5) * 110 - 14) * e + Math.sin(e * 4 + q.r3 * 6) * 10 * e;
+      // grains lift as they break off (falling grains clump on the text below and read as dirt)
+      let y = q.y + ((q.r2 - 0.5) * 80 - 34) * e + Math.sin(e * 4 + q.r3 * 6) * 8 * e;
       // idle float: the dust spreads into a slow cloud around the screen centre
       const cx = this.bounds.left + this.bounds.width / 2;
       x += a * ((cx - q.x) * 0.6 - (20 + q.r1 * 110) + (q.r2 - 0.5) * 300 + Math.sin(τ * (0.5 + q.r1) + q.r3 * 6.3) * 14);
@@ -244,11 +261,12 @@ export class ParticleEngine {
       }
       if (alpha <= 0.01) continue;
       ctx.globalAlpha = alpha;
-      ctx.fillStyle = q.blue ? this.colors[1] : this.colors[0];
+      // fresh grains keep the letter's colour, then turn to light as they drift away
+      ctx.fillStyle = e < 0.12 && g <= 0 ? q.ink : q.blue ? this.colors[1] : this.colors[0];
       const s = q.size * (1 - 0.25 * e) * shrink;
       // round grains (squares read as dirt); about one in seven gets a soft halo, like light
       ctx.beginPath();
-      ctx.arc(x, y, s * 0.55, 0, Math.PI * 2);
+      ctx.arc(x, y, s * 0.62, 0, Math.PI * 2);
       ctx.fill();
       if (q.r3 < 0.14 && e > 0.2) {
         ctx.globalAlpha = alpha * 0.16;
