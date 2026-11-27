@@ -1,0 +1,6 @@
+# Deploys go from this Mac with the Vercel CLI, so the git-ignored Yekan Bakh fonts in
+# public/fonts/yekan-bakh/ are uploaded (this file replaces .gitignore for the upload).
+node_modules
+dist
+.git
+.env*

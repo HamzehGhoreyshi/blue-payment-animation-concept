@@ -39,7 +39,7 @@ Needs Google Chrome and ffmpeg. `?demo` in the URL hides the footer for clean re
 
 ## Stack
 
-Vite · React 18 · TypeScript · Tailwind CSS v4 · Motion · Canvas 2D · Vazirmatn
+Vite · React 18 · TypeScript · Tailwind CSS v4 · Motion · Canvas 2D · Yekan Bakh (live site) / Vazirmatn (fallback)
 
 - `src/screens/Flow.tsx` — confirm screen and the processing sequence
 - `src/screens/Success.tsx` — result screen and details sheet
@@ -47,6 +47,9 @@ Vite · React 18 · TypeScript · Tailwind CSS v4 · Motion · Canvas 2D · Vazi
 - `src/components/SwipeConfirm.tsx`, `Island.tsx`, `RollingNumber.tsx`
 
 ## Credits
+
+The live site uses Yekan Bakh (licensed, not included in this repo); a clone falls back to Vazirmatn.
+
 
 A non-commercial design concept. The look is inspired by the blu banking app (blu and its «b» mark belong to their owners). Name and numbers are placeholders («لورم ایپسوم», 1234…). Nothing is sent anywhere — the transfer is simulated.
 

@@ -10,9 +10,9 @@ Project summary lives in: `~/Desktop/AI/ai-os/10_context/projects/blue-payment-a
 
 ## This project
 - What it is: an animated, fully Persian (RTL) transfer-confirm prototype in Blu Bank's dark UI — only two screens: review + swipe-to-confirm (left → right), then success. «بازگشت» returns to review for another run. Motion is modelled on a reference video: swipe dissolves the amount into dust from the left, a status island does scan → spinner → check, digits roll with blur. Simulated only: no real banking calls.
-- Tech stack: Vite + React 18 + TypeScript + Tailwind v4 + Motion (`motion/react`). Particles on one `<canvas>`. Font: Vazirmatn (bundled, OFL).
+- Tech stack: Vite + React 18 + TypeScript + Tailwind v4 + Motion (`motion/react`). Particles on one `<canvas>`. Font: Yekan Bakh FaNum (Blu's typeface; paid, site-only, needs Hamzeh's 6-digit code in public/fonts/yekan-bakh/FontLicense.txt), falling back to Vazirmatn (OFL) when missing.
 - How to run it: `npm install`, then `npm run dev -- --port 5191` (also in `.claude/launch.json` as `blue-payment`).
-- How to deploy it: push to main on GitHub (HamzehGhoreyshi/blue-payment-animation-concept, public) — Vercel auto-deploys to https://blue-payment-animation-concept.vercel.app. Manual: `vercel --prod`.
+- How to deploy it: `vercel --prod` from this Mac → https://blue-payment-animation-concept.vercel.app. GitHub auto-deploy is OFF on purpose: the paid Yekan Bakh fonts (public/fonts/yekan-bakh/, git-ignored, kept from ~/Desktop/Social/RAW/Fonts/YekanBakh Pro) only exist locally, so a Git build would ship without them. Push to GitHub for the code, deploy with the CLI for the site.
 - Videos: `npm i --no-save puppeteer-core && npm run build`, then `node tools/record.mjs <out.mp4> 540 960 4` (social 9:16 4K) or `... 1280 720 3` (README 16:9 4K). `?demo` hides the footer.
 - Files:
   - `src/store.tsx` — app state (view, draft, accounts, receipt) and the simulated `submit()`.

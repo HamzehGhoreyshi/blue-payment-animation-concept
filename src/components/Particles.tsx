@@ -66,7 +66,7 @@ export class ParticleEngine {
     const lw = c.offsetWidth || r.width;
     const lh = c.offsetHeight || r.height;
     const shown = r.width / (lw || 1); // frame scale
-    const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2) * Math.max(shown, 0.5));
+    const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 4) * Math.max(shown, 0.5));
     c.width = Math.round(lw * dpr);
     c.height = Math.round(lh * dpr);
     this.ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);

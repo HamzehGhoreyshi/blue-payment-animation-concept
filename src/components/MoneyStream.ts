@@ -33,7 +33,7 @@ export class MoneyStream {
 
   resize(canvas: HTMLCanvasElement) {
     const r = canvas.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 4) * Math.max(0.5, r.width / (canvas.offsetWidth || r.width));
     // layout size (unscaled), so drawing stays in CSS pixels even inside a scaled frame
     this.w = canvas.offsetWidth || r.width;
     this.h = canvas.offsetHeight || r.height;

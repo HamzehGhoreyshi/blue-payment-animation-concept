@@ -2,7 +2,7 @@
 // the last and nothing ever drops. A soft touch dot plays the finger; the drags and the tap
 // are real pointer events sent to Chrome, so the app reacts exactly as it would to a user.
 //
-// Story (~17.5 s, ends on the same screen it starts on, so it loops):
+// Story (~19 s, ends on the same screen it starts on, so it loops):
 //   rest → half swipe and let go (the amount re-forms) → full swipe → island scan, spinner,
 //   check, dust flies into it → success screen → tap «بازگشت» → island receipt drops down.
 //
@@ -201,7 +201,7 @@ await drag(t.x, end, t.y, 1.05, 0.08);
 await lift(end, t.y, 0.35);
 
 // processing on the island, dust flies in, success screen builds up
-await hold(6.4);
+await hold(7.6);
 
 // 3 — back: tap «بازگشت», the island drops the receipt
 const back = await page.evaluate(() => {
