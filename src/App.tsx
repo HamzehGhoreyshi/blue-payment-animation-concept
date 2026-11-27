@@ -40,10 +40,11 @@ export default function App() {
       <StoreProvider>
         <IslandProvider>
           <ParticleProvider engine={engine}>
-            <div className="grid w-full place-items-center overflow-hidden" style={{ height: 'calc(100% - var(--footer-h))' }}>
+            {/* flex (not grid) so the scaled phone centres on the visible area, not its unscaled height */}
+            <div className="flex w-full items-center justify-center overflow-hidden" style={{ height: 'calc(100% - var(--footer-h))' }}>
               <div
                 id="frame"
-                className={`relative overflow-hidden ${framed ? '' : 'app-mobile h-full w-full'}`}
+                className={`relative shrink-0 overflow-hidden ${framed ? '' : 'app-mobile h-full w-full'}`}
                 style={
                   framed
                     ? { width: W, height: H, borderRadius: 56, background: 'var(--bg)', transform: `scale(${scale})`, boxShadow: '0 0 0 11px #05070a, 0 0 0 12.5px #2a2f36, 0 40px 90px rgba(0,0,0,.6)' }
