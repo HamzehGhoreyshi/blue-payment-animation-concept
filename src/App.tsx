@@ -36,7 +36,9 @@ export default function App() {
   const engine = useMemo(() => new ParticleEngine(), []);
   const { framed, scale } = useFrame();
   return (
-    <MotionConfig reducedMotion="user">
+    // The phone frame is CSS-scaled on smaller windows; map pointer positions into its space
+    // so a drag moves the thumb exactly as far as the pointer (only deltas matter here).
+    <MotionConfig reducedMotion="user" transformPagePoint={scale === 1 ? undefined : (pt) => ({ x: pt.x / scale, y: pt.y / scale })}>
       <StoreProvider>
         <IslandProvider>
           <ParticleProvider engine={engine}>
