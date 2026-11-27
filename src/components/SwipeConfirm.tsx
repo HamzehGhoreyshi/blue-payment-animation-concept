@@ -57,7 +57,8 @@ export function SwipeConfirm({ label, disabled, done, onProgress, onConfirm }: {
     if (dx <= 0 || disabled) return; // only while moving toward the exit
     // more grains the faster the drag; a few even for tiny moves
     const n = Math.floor(dx * 0.8) + (Math.random() < dx * 0.3 ? 1 : 0);
-    if (n > 0) stream.current?.emit(PAD + THUMB + v + 2, n, dx * 60); // dx per frame × 60 ≈ thumb speed
+    // spawn a step ahead of the thumb (it moves dx before the grains' next frame)
+    if (n > 0) stream.current?.emit(PAD + THUMB + v + 2 + dx, n, dx * 60); // dx per frame × 60 ≈ thumb speed
     // the opposite in the wake: a few slow embers drift back from behind the thumb
     const m = Math.floor(dx * 0.25) + (Math.random() < dx * 0.12 ? 1 : 0);
     if (m > 0) stream.current?.wake(PAD + v + 2, m);

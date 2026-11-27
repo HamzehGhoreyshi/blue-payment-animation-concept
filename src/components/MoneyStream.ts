@@ -71,7 +71,7 @@ export class MoneyStream {
     for (let i = 0; i < n && this.grains.length < MAX; i++) {
       this.grains.push({
         x: behindX - Math.random() * 8,
-        y: this.h * (0.18 + Math.random() * 0.64),
+        y: this.h * (0.12 + Math.random() * 0.76),
         vx: -(14 + Math.random() * 34),
         vy: (Math.random() - 0.5) * 36 - 4,
         r: 0.9 + Math.random() * 1.6,
@@ -119,16 +119,9 @@ export class MoneyStream {
         ctx.fill();
         continue;
       }
-      // safety net: a streak the thumb has overtaken becomes a soft ember, never a leftover line
-      if (g.x < this.thumbRight - 2) {
-        g.ember = true;
-        g.vx = -(10 + Math.random() * 26);
-        g.vy = (Math.random() - 0.5) * 30;
-        g.life = 0.7;
-        g.r = 0.8 + Math.random() * 1.2;
-        keep.push(g);
-        continue;
-      }
+      // a streak the thumb has overtaken just goes (it is behind the thumb at that moment);
+      // turning it into an ember made a dotted line along the path
+      if (g.x < this.thumbRight - 2) continue;
       g.vx *= 1 + dt * 0.9; // they accelerate toward the exit
       g.x += g.vx * dt;
       g.y += g.vy * dt;
