@@ -106,7 +106,8 @@ html[data-theme='light'] .card {
   box-shadow: 0 1px 2px rgba(16, 40, 70, 0.04), 0 4px 16px -6px rgba(16, 40, 70, 0.08);
 }
 /* smooth switch between themes */
-.theme-anim, .theme-anim * {
+.theme-anim :not(.dn, .dn *) {
+  /* the day/night switch keeps its own springs; only the app cross-fades */
   transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease !important;
 }
 

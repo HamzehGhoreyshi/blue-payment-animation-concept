@@ -49,7 +49,6 @@
   outline: none;
   transition: transform 350ms var(--spring-soft);
 }
-.dn.toggle:hover  { transform: translateY(-2px); }
 .dn.toggle:active { transform: scale(.975); transition-duration: 120ms; }
 .dn.toggle:focus-visible { outline: 3px solid #4c8af5; outline-offset: 4px; }
 
@@ -267,4 +266,6 @@ html.demo .theme-top { display: none; }
     transition-delay: 0ms !important;
   }
 }
+/* first paint: show the current state without animating into it (as in the original) */
+html.dn-preload .dn *, html.dn-preload .dn *::before, html.dn-preload .dn *::after { transition: none !important; animation: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

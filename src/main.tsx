@@ -16,6 +16,8 @@ const syncSwitch = () => {
   dn?.setAttribute('aria-label', night ? 'Dark mode' : 'Light mode');
 };
 syncSwitch();
+// enable the switch's transitions only after the first paint
+requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('dn-preload')));
 dn?.addEventListener('click', () => {
   const root = document.documentElement;
   const next = root.dataset.theme === 'light' ? 'dark' : 'light';
