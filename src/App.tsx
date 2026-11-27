@@ -20,7 +20,9 @@ function useFrame() {
     const demo = document.documentElement.classList.contains('demo');
     const footer = demo ? 0 : 52;
     const framed = demo || (window.innerWidth >= 600 && window.innerHeight >= 640);
-    const scale = framed ? Math.min(1, (window.innerHeight - footer - 48) / H, (window.innerWidth - 48) / W) : 1;
+    // in the browser the phone sits a little smaller than life size, with room around it
+    const cap = demo ? 1 : 0.86;
+    const scale = framed ? Math.min(cap, (window.innerHeight - footer - 64) / H, (window.innerWidth - 48) / W) : 1;
     return { framed, scale };
   };
   const [f, setF] = useState(calc);
@@ -76,7 +78,7 @@ function Screens() {
   const c = { dir: s.dir, reveal: s.view === 'success' };
   return (
     <AnimatePresence initial={false} custom={c}>
-      <motion.div key={s.view} custom={c} variants={views} initial="enter" animate="center" exit="exit" className="absolute inset-0" style={{ background: 'var(--bg)' }}>
+      <motion.div key={s.view} custom={c} variants={views} initial="enter" animate="center" exit="exit" className="absolute inset-0">
         <InertWhenLeaving>
           {s.view === 'review' && <Review />}
           {s.view === 'success' && s.receipt && <Success />}

@@ -21,8 +21,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <motion.div
               key={msg.id}
               role="status"
-              className="rounded-full px-4 py-2.5 text-center text-[13px]"
-              style={{ background: '#eef2f7', color: 'var(--on-primary)', boxShadow: '0 10px 30px rgba(0,0,0,.35)' }}
+              className="glass-island rounded-full px-5 py-3 text-center text-[13px] font-medium text-white"
               initial={{ opacity: 0, y: 16, scale: 0.96, filter: 'blur(4px)' }}
               animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
               exit={{ opacity: 0, y: 8, scale: 0.98, filter: 'blur(4px)' }}

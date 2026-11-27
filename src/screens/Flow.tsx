@@ -28,7 +28,7 @@ export function Review() {
 }
 
 const Bottom = ({ children }: { children: React.ReactNode }) => (
-  <div className="px-4 pt-3" style={{ paddingBottom: 'calc(var(--safe-bottom) + 8px)' }}>
+  <div className="px-5 pt-4" style={{ paddingBottom: 'calc(var(--safe-bottom) + 8px)' }}>
     {children}
   </div>
 );
@@ -38,8 +38,8 @@ function RecipientHead({ r, size }: { r: Recipient; size: number }) {
     <div className="flex flex-col items-center gap-2 text-center">
       <Avatar recipient={r} size={size} />
       <div>
-        <div className="text-[17px] font-semibold">{r.name}</div>
-        <div dir="ltr" className="mt-1 text-[13px] tracking-wide" style={{ color: 'var(--text-2)' }}>
+        <div className="mt-1 text-[17px] font-semibold">{r.name}</div>
+        <div dir="ltr" className="num mt-1 text-[13px] tracking-[0.04em]" style={{ color: 'var(--text-2)' }}>
           {accountLine(r)}
         </div>
       </div>
@@ -120,10 +120,11 @@ function ReviewStep() {
       if (el && host) {
         const b = el.getBoundingClientRect();
         const scale = host.width / (engine.canvas?.offsetWidth || host.width);
-        engine.setTarget((b.left + b.width / 2 - host.left) / scale, (b.top + b.height / 2 - host.top) / scale);
+        // aim at where the island's centre will be once open (86 px tall), not where it is mid-spring
+        engine.setTarget((b.left + b.width / 2 - host.left) / scale, (b.top - host.top) / scale + 43);
       }
-      engine.converge();
-      await wait(1050);
+      await engine.converge(); // let every grain land before the result screen
+      await wait(120);
       s.showSuccess();
       await wait(500);
       island.set({ kind: 'idle' });
@@ -150,14 +151,14 @@ function ReviewStep() {
   return (
     <>
       <div className="no-scrollbar flex-1 overflow-y-auto">
-        <div className="px-4 pb-6 pt-3">
-          <RecipientHead r={r} size={68} />
-          <div className="mt-7 flex flex-col items-center">
-            <motion.div layoutId="amount" className="flex items-baseline gap-2" transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
-              <span ref={numRef} dir="ltr" className="text-[32px] font-bold leading-tight">{money(s.draft.amount)}</span>
-              <span ref={unitRef} className="text-[26px] font-bold leading-tight">ریال</span>
+        <div className="px-5 pb-5 pt-1">
+          <RecipientHead r={r} size={58} />
+          <div className="mt-6 flex flex-col items-center">
+            <motion.div layoutId="amount" className="flex items-baseline gap-1.5" transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
+              <span ref={numRef} dir="ltr" className="num text-[40px] font-bold leading-none tracking-[-0.02em]">{money(s.draft.amount)}</span>
+              <span ref={unitRef} className="text-[19px] font-medium leading-none" style={{ color: 'var(--text-2)' }}>ریال</span>
             </motion.div>
-            <motion.div className="mt-2 text-[15px]" style={{ color: 'var(--text-2)' }} initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }} animate={{ opacity: hide ? 0 : 1, y: 0, filter: hide ? 'blur(4px)' : 'blur(0px)' }} transition={{ duration: 0.45, delay: hide ? 0 : 0.1, ease: EASE_OUT }}>
+            <motion.div className="mt-2.5 text-[13px]" style={{ color: 'var(--text-2)' }} initial={{ opacity: 0, filter: 'blur(6px)' }} animate={{ opacity: hide ? 0 : 1, filter: hide ? 'blur(4px)' : 'blur(0px)' }} transition={{ duration: 0.45, delay: hide ? 0 : 0.1, ease: EASE_OUT }}>
               مبلغ انتقال
             </motion.div>
           </div>
@@ -165,37 +166,49 @@ function ReviewStep() {
 
         <AnimatePresence>
           {!hide && (
-            <motion.div key="details" exit={{ opacity: 0, y: 16, filter: 'blur(6px)', transition: { duration: 0.35, ease: 'easeIn' as const } }}>
-              <motion.div className="h-px" style={{ background: 'var(--line)' }} {...stagger(2)} />
-              <div className="px-4 pt-5">
-                <motion.div {...stagger(3)} className="mb-3 text-[15px] font-semibold">انتقال از</motion.div>
-                <motion.button {...stagger(4)} whileTap={{ scale: 0.98 }} onClick={() => setSheet('account')} aria-haspopup="dialog" className="flex w-full items-center gap-4 rounded-[14px] p-4 text-right" style={{ background: 'var(--surface-2)' }}>
-                  <BluMark size={52} />
-                  <span className="flex-1">
+            <motion.div key="details" exit={{ opacity: 0, scale: 0.98, filter: 'blur(8px)', transition: { duration: 0.35, ease: 'easeIn' as const } }}>
+              <motion.div className="hairline mx-5" {...stagger(2)} />
+              <div className="px-5 pb-6 pt-5">
+                {/* section header: small, secondary — the card carries the weight */}
+                <motion.div {...stagger(3)} className="mb-2 px-1 text-[13px] font-medium" style={{ color: 'var(--text-2)' }}>
+                  انتقال از
+                </motion.div>
+                <motion.button
+                  {...stagger(4)}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                  onClick={() => setSheet('account')}
+                  aria-haspopup="dialog"
+                  className="glass press flex w-full items-center gap-3.5 rounded-[20px] px-4 py-3.5 text-right"
+                >
+                  <BluMark size={44} />
+                  <span className="min-w-0 flex-1">
                     <span className="block text-[16px] font-semibold">{s.account.name}</span>
-                    <span className="mt-1 block text-[13px]" style={{ color: short ? 'var(--danger)' : 'var(--text-2)' }}>
+                    <span className="num mt-1 block text-[13px]" style={{ color: short ? 'var(--danger)' : 'var(--text-2)' }}>
                       قابل برداشت: {money(s.account.balance)} ریال
                     </span>
                   </span>
-                  <IconChevronDown size={24} style={{ color: 'var(--primary)' }} />
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full" style={{ background: 'rgba(114,171,243,.12)', color: 'var(--primary)' }}>
+                    <IconChevronDown size={18} strokeWidth={2} />
+                  </span>
                 </motion.button>
                 {short && (
-                  <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-[12.5px]" style={{ color: 'var(--danger)' }}>
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 px-1 text-[12.5px]" style={{ color: 'var(--danger)' }}>
                     موجودی این حساب برای این انتقال کافی نیست.
                   </motion.p>
                 )}
 
-                <motion.dl {...stagger(5)} className="mt-5 divide-y rounded-[14px] px-4" style={{ background: 'var(--surface)', borderColor: 'var(--line)' }}>
+                <motion.dl {...stagger(5)} className="glass rows mt-3 rounded-[20px] text-[15px]">
                   {rows.map(([k, v]) => (
-                    <div key={k} className="flex items-center justify-between py-3.5 text-[14px]" style={{ borderColor: 'var(--line)' }}>
+                    <div key={k} className="mx-4 flex min-h-[48px] items-center justify-between">
                       <dt style={{ color: 'var(--text-2)' }}>{k}</dt>
                       <dd className="font-medium">{v}</dd>
                     </div>
                   ))}
-                  <div className="flex items-center justify-between py-3.5 text-[14px]" style={{ borderColor: 'var(--line)' }}>
+                  <div className="mx-4 flex min-h-[48px] items-center justify-between">
                     <dt style={{ color: 'var(--text-2)' }}>توضیحات</dt>
                     <dd>
-                      <button onClick={() => setSheet('note')} className="flex max-w-[180px] items-center gap-1.5 truncate font-medium" style={{ color: s.draft.note ? 'var(--text)' : 'var(--primary)' }}>
+                      <button onClick={() => setSheet('note')} className="link flex max-w-[180px] items-center gap-1.5 truncate font-medium" style={{ color: s.draft.note ? 'var(--text)' : 'var(--primary)' }}>
                         {!s.draft.note && <IconNote size={16} />}
                         <span className="truncate">{s.draft.note || 'افزودن'}</span>
                       </button>
@@ -212,7 +225,7 @@ function ReviewStep() {
           {hide && (
             <motion.p key="sending" className="absolute inset-x-0 top-[58%] px-8 text-center text-[15px]" style={{ color: 'var(--text-2)' }} exit={{ opacity: 0, filter: 'blur(6px)' }}>
               {`در حال انتقال به ${r.name}`.split(' ').map((w, i) => (
-                <motion.span key={i} className="inline-block" initial={{ opacity: 0, filter: 'blur(8px)', y: 6 }} animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }} transition={{ delay: 0.5 + i * 0.09, duration: 0.5, ease: EASE_OUT }}>
+                <motion.span key={i} className="inline-block" initial={{ opacity: 0, filter: 'blur(8px)' }} animate={{ opacity: 1, filter: 'blur(0px)' }} transition={{ delay: 0.5 + i * 0.09, duration: 0.5, ease: EASE_OUT }}>
                   {w}&nbsp;
                 </motion.span>
               ))}
@@ -224,7 +237,7 @@ function ReviewStep() {
       <Bottom>
         <AnimatePresence>
           {phase === 'failed' && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mb-3 flex items-start gap-2.5 rounded-xl p-3.5 text-[13px] leading-6" style={{ background: 'rgba(242,116,116,.1)' }} role="alert">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mb-3 flex items-start gap-2.5 rounded-[20px] p-4 text-[13px] leading-6" style={{ background: 'rgba(242,116,116,.1)', boxShadow: 'inset 0 0 0 0.5px rgba(242,116,116,.25)' }} role="alert">
               <IconAlert size={20} className="mt-0.5 shrink-0" style={{ color: 'var(--danger)' }} />
               <span>
                 <b className="block font-semibold" style={{ color: 'var(--danger)' }}>انتقال انجام نشد</b>
@@ -250,16 +263,18 @@ function ReviewStep() {
                   s.patch({ accountId: a.id });
                   setTimeout(() => setSheet(null), 160);
                 }}
-                className="relative flex w-full items-center gap-3.5 rounded-[14px] p-3.5 text-right"
-                style={{ background: 'var(--surface-2)' }}
+                className="glass relative flex w-full items-center gap-3.5 rounded-[20px] px-4 py-3.5 text-right"
                 aria-pressed={active}
               >
-                {active && <motion.span layoutId="acc-ring" className="absolute inset-0 rounded-[14px] border-[1.5px]" style={{ borderColor: 'var(--primary)' }} />}
-                <BluMark size={42} />
+                {active && <motion.span layoutId="acc-ring" className="absolute inset-0 rounded-[20px] border-[1.5px]" style={{ borderColor: 'var(--primary)' }} transition={{ type: 'spring', stiffness: 500, damping: 38 }} />}
+                <BluMark size={44} />
                 <span className="flex-1">
-                  <span className="block text-[15px] font-semibold">{a.name}</span>
-                  <span className="mt-0.5 block text-[12.5px]" style={{ color: 'var(--text-2)' }}>
-                    {a.caption} · قابل برداشت: {money(a.balance)} ریال
+                  <span className="flex items-baseline gap-2">
+                    <span className="text-[16px] font-semibold">{a.name}</span>
+                    <span className="text-[12px]" style={{ color: 'var(--text-3)' }}>{a.caption}</span>
+                  </span>
+                  <span className="mt-1 block text-[13px]" style={{ color: 'var(--text-2)' }}>
+                    قابل برداشت: {money(a.balance)} ریال
                   </span>
                 </span>
                 {active && <IconCheck size={20} style={{ color: 'var(--primary)' }} />}
@@ -277,8 +292,7 @@ function ReviewStep() {
           autoFocus
           placeholder="مثلاً: سهم شام"
           aria-label="توضیحات انتقال"
-          className="field w-full resize-none rounded-xl p-3.5 text-[15px] outline-none placeholder:text-[color:var(--text-3)]"
-          style={{ background: 'var(--surface-2)' }}
+          className="field glass w-full resize-none rounded-[20px] p-4 text-[15px] outline-none placeholder:text-[color:var(--text-3)]"
         />
         <div className="mb-4 mt-1 text-left text-[12px]" style={{ color: 'var(--text-3)' }}>{fa(note.length)}/{fa(60)}</div>
         <PrimaryButton

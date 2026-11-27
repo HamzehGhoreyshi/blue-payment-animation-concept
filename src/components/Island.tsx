@@ -41,7 +41,7 @@ export function Island({ framed }: { framed: boolean }) {
     k === 'idle'
       ? { width: 122, height: 35, borderRadius: 18 }
       : k === 'notify'
-        ? { width: 366, height: 150, borderRadius: 40 }
+        ? { width: 368, height: 152, borderRadius: 45 } // concentric with the 56px screen corner, 11px in
         : { width: 86, height: 86, borderRadius: 30 };
   const hidden = k === 'idle' && !framed;
   return (
@@ -50,8 +50,8 @@ export function Island({ framed }: { framed: boolean }) {
         id="island"
         role="status"
         aria-live="polite"
-        className="relative overflow-hidden"
-        style={{ background: '#05070A', boxShadow: k === 'idle' ? 'none' : '0 12px 40px rgba(0,0,0,.45)', maxWidth: 'calc(100vw - 20px)' }}
+        className={`relative overflow-hidden ${k === 'idle' ? '' : 'glass-island'}`}
+        style={{ background: '#05070A', maxWidth: 'calc(100vw - 20px)' }}
         initial={false}
         animate={{ ...size, opacity: hidden ? 0 : 1, scale: hidden ? 0.6 : 1 }}
         transition={SPRING}
@@ -118,14 +118,14 @@ function Result({ ok }: { ok: boolean }) {
 
 function Notify({ recipient, amount }: { recipient: Recipient; amount: number }) {
   return (
-    <div className="flex w-full flex-col items-center gap-1.5 px-6 pt-7 text-center">
+    <div className="flex w-full flex-col items-center gap-1.5 px-6 pt-[26px] text-center">
       <Avatar recipient={recipient} size={34} />
-      <div className="text-[12px]" style={{ color: 'var(--text-2)' }}>انتقال به {recipient.name}</div>
-      <div className="flex items-center gap-1.5 text-[24px] font-bold text-white">
+      <div className="text-[13px]" style={{ color: 'var(--text-2)' }}>انتقال به {recipient.name}</div>
+      <div className="flex items-center gap-1.5 text-[26px] font-bold tracking-[-0.02em] text-white">
         <RollingNumber value={amount} delay={0.25} />
         <span className="text-[14px] font-medium" style={{ color: 'var(--text-2)' }}>ریال</span>
       </div>
-      <div className="flex items-center gap-1 text-[12px]" style={{ color: 'var(--success)' }}>
+      <div className="flex items-center gap-1 text-[13px] font-medium" style={{ color: 'var(--success)' }}>
         <IconCheck size={14} /> انجام شد
       </div>
     </div>

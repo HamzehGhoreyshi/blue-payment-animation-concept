@@ -13,9 +13,13 @@ export const push: Variants = {
   exit: (dir: number) => ({ x: dir > 0 ? '28%' : '-100%', opacity: dir > 0 ? 0.6 : 1, transition: { duration: 0.5, ease: EASE_IOS } }),
 };
 
-/** Step content inside the flow: rise + un-blur in, sink + blur out (no plain fades). */
+/**
+ * Content appears in place: fade + un-blur + a hair of scale, no vertical travel.
+ * Ends on `filter: none`, because any leftover filter (even blur(0)) on an ancestor
+ * switches off the backdrop blur of the liquid-glass surfaces inside it.
+ */
 export const stagger = (i: number, base = 0.05) => ({
-  initial: { opacity: 0, y: 14, filter: 'blur(6px)' },
-  animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.45, delay: base + i * 0.05, ease: EASE_OUT } },
-  exit: { opacity: 0, y: 10, filter: 'blur(6px)', transition: { duration: 0.22, ease: 'easeIn' as const } },
+  initial: { opacity: 0, scale: 0.985, filter: 'blur(8px)' },
+  animate: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.5, delay: base + i * 0.05, ease: EASE_OUT }, transitionEnd: { filter: 'none' } },
+  exit: { opacity: 0, filter: 'blur(6px)', transition: { duration: 0.22, ease: 'easeIn' as const } },
 });

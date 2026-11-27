@@ -221,19 +221,25 @@ export class ParticleEngine {
       x += a * ((cx - q.x) * 0.6 - (20 + q.r1 * 110) + (q.r2 - 0.5) * 300 + Math.sin(τ * (0.5 + q.r1) + q.r3 * 6.3) * 14);
       y += a * ((q.r3 - 0.5) * 300 + 40 + Math.cos(τ * (0.4 + q.r2) + q.r1 * 6.3) * 14);
       let alpha = (1 - 0.45 * e) * (f > 0 ? 1 : a);
-      // converge into the island with a gentle swirl
+      // converge: every grain accelerates straight into the island's centre, with only a
+      // slight sideways bow that is zero at both ends, and fades just as it arrives
+      let shrink = 1;
       if (g > 0) {
-        const l = clamp((g - q.r4 * 0.4) / 0.6);
-        const k = inOut(l);
-        const swirl = Math.sin(l * Math.PI) * (q.r1 - 0.5) * 90;
-        x = x + (tx - x) * k + swirl;
-        y = y + (ty - y) * k;
-        alpha *= 1 - Math.pow(l, 4);
+        const l = clamp((g - q.r4 * 0.35) / 0.65);
+        const k = l * l * l; // ease-in: leaves gently, lands fast
+        const dx = tx - x;
+        const dy = ty - y;
+        const len = Math.hypot(dx, dy) || 1;
+        const bow = Math.sin(l * Math.PI) * (q.r1 - 0.5) * 24; // perpendicular to the path
+        x = x + dx * k + (-dy / len) * bow;
+        y = y + dy * k + (dx / len) * bow;
+        alpha *= 1 - smooth(clamp((l - 0.86) / 0.14));
+        shrink = 1 - 0.5 * k;
       }
       if (alpha <= 0.01) continue;
       ctx.globalAlpha = alpha;
       ctx.fillStyle = q.blue ? '#8EBDF7' : '#E9EDF2';
-      const s = q.size * (1 - 0.25 * e);
+      const s = q.size * (1 - 0.25 * e) * shrink;
       ctx.fillRect(x, y, s, s);
     }
     ctx.globalAlpha = 1;

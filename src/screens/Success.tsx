@@ -13,8 +13,8 @@ import { useStore } from '../store';
 import { accountLine } from './Flow';
 
 const rise = (d: number) => ({
-  initial: { opacity: 0, y: 18, filter: 'blur(8px)' },
-  animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+  initial: { opacity: 0, scale: 0.985, filter: 'blur(8px)' },
+  animate: { opacity: 1, scale: 1, filter: 'blur(0px)', transitionEnd: { filter: 'none' } },
   transition: { duration: 0.6, delay: d, ease: EASE_OUT },
 });
 
@@ -37,58 +37,60 @@ export function Success() {
 
   return (
     <div className="flex h-full flex-col" style={{ paddingTop: 'calc(var(--safe-top) + 24px)' }}>
-      <div className="no-scrollbar flex-1 overflow-y-auto px-4">
+      <div className="no-scrollbar flex-1 overflow-y-auto px-5">
         <div className="flex flex-col items-center pt-6 text-center">
           <SuccessBadge />
-          <h1 className="mt-6 text-[19px] font-bold" aria-label={title}>
+          <h1 className="mt-7 text-[22px] font-bold tracking-[-0.01em]" aria-label={title}>
             {title.split(' ').map((w, i) => (
-              <motion.span key={i} className="inline-block" initial={{ opacity: 0, filter: 'blur(8px)', y: 8 }} animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }} transition={{ delay: 0.55 + i * 0.07, duration: 0.5, ease: EASE_OUT }}>
+              <motion.span key={i} className="inline-block" initial={{ opacity: 0, filter: 'blur(8px)' }} animate={{ opacity: 1, filter: 'blur(0px)' }} transition={{ delay: 0.55 + i * 0.07, duration: 0.5, ease: EASE_OUT }}>
                 {w}&nbsp;
               </motion.span>
             ))}
           </h1>
-          <motion.div {...rise(0.8)} className="mt-4 flex items-center gap-2">
-            <RollingNumber value={rc.amount} className="text-[34px] font-bold" delay={0.85} duration={1.3} />
-            <span className="text-[18px] font-medium" style={{ color: 'var(--text-2)' }}>ریال</span>
+          <motion.div {...rise(0.8)} className="mt-3 flex items-center gap-1.5">
+            <RollingNumber value={rc.amount} className="text-[40px] font-bold tracking-[-0.02em]" delay={0.85} duration={1.3} />
+            <span className="text-[19px] font-medium" style={{ color: 'var(--text-2)' }}>ریال</span>
           </motion.div>
         </div>
 
-        <motion.div {...rise(1.05)} className="mt-8 rounded-[16px] p-4" style={{ background: 'var(--surface)' }}>
-          <div className="flex items-center gap-3">
+        <motion.div {...rise(1.05)} className="glass rows mt-9 rounded-[20px] text-[15px]">
+          <div className="mx-4 flex items-center gap-3 py-3.5">
             <Avatar recipient={rc.recipient} size={44} />
             <div className="min-w-0 flex-1">
-              <div className="text-[15px] font-semibold">{rc.recipient.name}</div>
-              <div dir="ltr" className="mt-0.5 text-right text-[12.5px] tracking-wide" style={{ color: 'var(--text-2)' }}>{accountLine(rc.recipient)}</div>
+              <div className="text-[16px] font-semibold">{rc.recipient.name}</div>
+              <div dir="ltr" className="num mt-0.5 text-right text-[13px] tracking-[0.04em]" style={{ color: 'var(--text-2)' }}>{accountLine(rc.recipient)}</div>
             </div>
           </div>
-          <div className="mt-4 flex items-center justify-between border-t pt-3.5 text-[14px]" style={{ borderColor: 'var(--line)' }}>
+          <div className="mx-4 flex min-h-[52px] items-center justify-between">
             <span style={{ color: 'var(--text-2)' }}>شماره پیگیری</span>
-            <button onClick={copy} className="flex items-center gap-1.5 font-medium" aria-label={`کپی شماره پیگیری ${fa(rc.tracking)}`}>
-              <span dir="ltr" className="tracking-wider">{fa(rc.tracking)}</span>
+            <button onClick={copy} className="link flex items-center gap-1.5 font-medium" aria-label={`کپی شماره پیگیری ${fa(rc.tracking)}`}>
+              <span dir="ltr" className="num tracking-[0.04em]">{fa(rc.tracking)}</span>
               <IconCopy size={17} style={{ color: 'var(--primary)' }} />
             </button>
           </div>
-          <div className="mt-3 flex items-center justify-between text-[14px]">
+          <div className="mx-4 flex min-h-[52px] items-center justify-between">
             <span style={{ color: 'var(--text-2)' }}>تاریخ و ساعت</span>
             <span className="font-medium">{rc.date} · {rc.time}</span>
           </div>
         </motion.div>
 
-        <motion.p {...rise(1.2)} className="mt-4 text-center text-[12px] leading-5" style={{ color: 'var(--text-3)' }}>
-          این یک نمونه نمایشی است؛ هیچ وجهی واقعاً منتقل نشده است.
+        <motion.p {...rise(1.2)} className="mt-4 px-4 text-center text-[12px] leading-5" style={{ color: 'var(--text-3)' }}>
+          نمونه نمایشی است؛ وجهی واقعاً منتقل نشده است.
         </motion.p>
       </div>
 
-      <motion.div {...rise(1.25)} className="space-y-2.5 px-4 pt-3" style={{ paddingBottom: 'calc(var(--safe-bottom) + 8px)' }}>
-        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setDetails(true)} className="flex h-14 w-full items-center justify-center gap-2 rounded-[14px] text-[16px] font-semibold" style={{ background: 'var(--primary-soft)', color: 'var(--primary)' }}>
+      <motion.div {...rise(1.25)} className="space-y-2.5 px-5 pt-3" style={{ paddingBottom: 'calc(var(--safe-bottom) + 8px)' }}>
+        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setDetails(true)} className="glass press flex h-14 w-full items-center justify-center gap-2 rounded-[20px] text-[16px] font-semibold" style={{ color: 'var(--primary)' }}>
           <IconReceipt size={20} />
           جزئیات تراکنش
         </motion.button>
-        <PrimaryButton onClick={s.finish}>بازگشت</PrimaryButton>
+        <motion.button whileTap={{ scale: 0.97 }} onClick={s.finish} className="glass-blue press h-14 w-full rounded-[20px] text-[16px] font-semibold" style={{ color: 'var(--on-primary)' }}>
+          بازگشت
+        </motion.button>
       </motion.div>
 
       <Sheet open={details} onClose={() => setDetails(false)} title="جزئیات تراکنش">
-        <dl className="divide-y rounded-[14px] px-4 text-[14px]" style={{ background: 'var(--surface-2)' }}>
+        <dl className="glass rows rounded-[20px] text-[15px]">
           {(
             [
               ['وضعیت', <span style={{ color: 'var(--success)' }}>موفق</span>],
@@ -104,7 +106,7 @@ export function Success() {
               ['شماره پیگیری', <span dir="ltr">{fa(rc.tracking)}</span>],
             ] as [string, React.ReactNode][]
           ).map(([k, v]) => (
-            <div key={k} className="flex items-center justify-between gap-4 py-3" style={{ borderColor: 'var(--line)' }}>
+            <div key={k} className="mx-4 flex min-h-[46px] items-center justify-between gap-4">
               <dt style={{ color: 'var(--text-2)' }}>{k}</dt>
               <dd className="truncate font-medium">{v}</dd>
             </div>
