@@ -26,6 +26,7 @@
   --ring: rgba(255, 255, 255, 0.12);
   --dust: #e9edf2;
   --dust-accent: #8ebdf7;
+  --dust-mix: 0.22; /* share of accent-coloured grains */
   --shimmer-hi: rgba(255, 255, 255, 0.9);
   --toast-bg: #eef2f7;
   --toast-fg: #15202c;
@@ -55,8 +56,10 @@ html[data-theme='light'] {
   --status: #1a2228;
   --hair: rgba(37, 48, 53, 0.1);
   --ring: rgba(37, 48, 53, 0.08);
-  --dust: #253035;
-  --dust-accent: #307fe2;
+  /* on white the dust is Blu-blue light, not dark specks */
+  --dust: #3f8ae8;
+  --dust-accent: #9cc8fa;
+  --dust-mix: 0.42;
   --shimmer-hi: #cfe2ff;
   --toast-bg: #253035;
   --toast-fg: #ffffff;

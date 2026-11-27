@@ -47,6 +47,7 @@ export class ParticleEngine {
   reduced = false;
   /** dust colours follow the theme; read once per capture */
   colors: [string, string] = ['#e9edf2', '#8ebdf7'];
+  mix = 0.22;
 
   attach(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -70,6 +71,7 @@ export class ParticleEngine {
     this.resize();
     const root = getComputedStyle(document.documentElement);
     this.colors = [root.getPropertyValue('--dust').trim() || '#e9edf2', root.getPropertyValue('--dust-accent').trim() || '#8ebdf7'];
+    this.mix = parseFloat(root.getPropertyValue('--dust-mix')) || 0.22;
     const host = this.canvas.getBoundingClientRect();
     const scale = host.width / this.canvas.offsetWidth || 1; // phone frame may be scaled
     const out: Particle[] = [];
@@ -107,7 +109,7 @@ export class ParticleEngine {
           const i = (Math.floor(y * k) * w * k + Math.floor(x * k)) * 4 + 3;
           if (data[i] > 110) {
             const px = ox + x + (Math.random() - 0.5) * 0.6;
-            out.push({ x: px, y: oy + y, th: 0, r1: Math.random(), r2: Math.random(), r3: Math.random(), r4: Math.random(), size: 1.1 + Math.random() * 0.9, blue: Math.random() < 0.22 });
+            out.push({ x: px, y: oy + y, th: 0, r1: Math.random(), r2: Math.random(), r3: Math.random(), r4: Math.random(), size: 1.1 + Math.random() * 1.1, blue: Math.random() < this.mix });
           }
         }
       }
@@ -244,7 +246,16 @@ export class ParticleEngine {
       ctx.globalAlpha = alpha;
       ctx.fillStyle = q.blue ? this.colors[1] : this.colors[0];
       const s = q.size * (1 - 0.25 * e) * shrink;
-      ctx.fillRect(x, y, s, s);
+      // round grains (squares read as dirt); about one in seven gets a soft halo, like light
+      ctx.beginPath();
+      ctx.arc(x, y, s * 0.55, 0, Math.PI * 2);
+      ctx.fill();
+      if (q.r3 < 0.14 && e > 0.2) {
+        ctx.globalAlpha = alpha * 0.16;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 1.9, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
     ctx.globalAlpha = 1;
   }
