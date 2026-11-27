@@ -12,7 +12,8 @@ Project summary lives in: `~/Desktop/AI/ai-os/10_context/projects/blue-payment-a
 - What it is: an animated, fully Persian (RTL) transfer-confirm prototype in Blu Bank's dark UI — only two screens: review + swipe-to-confirm (left → right), then success. «بازگشت» returns to review for another run. Motion is modelled on a reference video: swipe dissolves the amount into dust from the left, a status island does scan → spinner → check, digits roll with blur. Simulated only: no real banking calls.
 - Tech stack: Vite + React 18 + TypeScript + Tailwind v4 + Motion (`motion/react`). Particles on one `<canvas>`. Font: Vazirmatn (bundled, OFL).
 - How to run it: `npm install`, then `npm run dev -- --port 5191` (also in `.claude/launch.json` as `blue-payment`).
-- How to deploy it: not deployed yet. If deployed: Vercel, after adding the portfolio link below.
+- How to deploy it: push to main on GitHub (HamzehGhoreyshi/blue-payment-animation-concept, public) — Vercel auto-deploys to https://blue-payment-animation-concept.vercel.app. Manual: `vercel --prod`.
+- Videos: `npm i --no-save puppeteer-core && npm run build`, then `node tools/record.mjs <out.mp4> 540 960 4` (social 9:16 4K) or `... 1280 720 3` (README 16:9 4K). `?demo` hides the footer.
 - Files:
   - `src/store.tsx` — app state (view, draft, accounts, receipt) and the simulated `submit()`.
   - `src/lib/data.ts` — placeholder data: name «لورم ایپسوم», numbers in the 1234 pattern.
