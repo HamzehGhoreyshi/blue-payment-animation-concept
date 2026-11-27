@@ -8,8 +8,6 @@ A payment-confirm screen in a Persian (RTL) banking app style, built to show one
 
 ▶️ Full-quality video (1920×1080, 60 fps, loops): [docs/demo.mp4](docs/demo.mp4)
 
-<img src="docs/screenshot.jpg" alt="The confirm screen: recipient, amount, source account, transfer details and the swipe control" width="100%">
-
 ## What moves
 
 - **Swipe to send** — a drag control whose progress drives the dissolve. Release before the end and the thumb springs back while the dust re-forms the amount.
