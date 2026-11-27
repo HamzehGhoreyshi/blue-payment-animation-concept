@@ -1,31 +1,36 @@
-import { haptic } from '../lib/haptic';
 import { AnimatePresence, animate, motion, useMotionTemplate, useMotionValue, useMotionValueEvent, useTransform } from 'motion/react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { haptic } from '../lib/haptic';
 import { IconArrowRight, IconCheck } from './Icons';
 import { MoneyStream } from './MoneyStream';
 
-// Concentric corners: track radius 20, inset 5 → thumb radius 15.
-const RADIUS = 20;
-const PAD = 5;
-const THUMB = 54;
+// Original Blu size: 56 px track. Concentric corners: track 14, inset 4 → thumb 10.
+const PAD = 4;
+const THUMB = 48;
 
 /**
  * Slide-to-confirm in Blu's primary-button style. The thumb travels left → right;
  * its progress drives the amount's dissolve, so letting go early re-forms the amount.
+ * While it moves, "money" grains stream out ahead of it and leave through the right end.
  */
 export function SwipeConfirm({ label, disabled, done, onProgress, onConfirm }: { label: string; disabled?: boolean; done?: boolean; onProgress: (p: number) => void; onConfirm: () => void }) {
   const track = useRef<HTMLDivElement>(null);
   const [max, setMax] = useState(260);
   const x = useMotionValue(0);
   const p = useTransform(x, (v) => Math.min(1, Math.max(0, v / max)));
-  // the label drifts a little with the thumb and softens away, like slide-to-unlock
+  // the label drifts a little with the thumb and softens away
   const labelOpacity = useTransform(p, [0, 0.5], [1, 0]);
   const labelX = useTransform(p, [0, 1], [0, 28]);
   const labelBlur = useTransform(p, [0, 0.5], [0, 4]);
   const labelFilter = useMotionTemplate`blur(${labelBlur}px)`;
-  const [confirmed, setConfirmed] = useState(false);
+  // trail behind the thumb: starts under its centre and is invisible at rest, so nothing frames the thumb
+  const fill = useTransform(x, (v) => PAD + THUMB / 2 + v);
+  const fillOpacity = useTransform(p, [0, 0.04], [0, 1]);
   // the exit at the right end brightens as the money gets closer to leaving
   const doorOpacity = useTransform(p, [0, 1], [0, 1]);
+  const fired = useRef(false);
+  const viaKeyboard = useRef(false);
+  const [confirmed, setConfirmed] = useState(false);
 
   // money out: grains stream ahead of the thumb and leave through the right end
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -53,11 +58,6 @@ export function SwipeConfirm({ label, disabled, done, onProgress, onConfirm }: {
     const n = Math.floor(dx * 0.8) + (Math.random() < dx * 0.3 ? 1 : 0);
     if (n > 0) stream.current?.emit(PAD + THUMB + v - 4, n, dx * 40);
   });
-  // trail behind the thumb: starts under its centre and is invisible at rest, so nothing frames the thumb
-  const fill = useTransform(x, (v) => PAD + THUMB / 2 + v);
-  const fillOpacity = useTransform(p, [0, 0.04], [0, 1]);
-  const fired = useRef(false);
-  const viaKeyboard = useRef(false);
 
   useLayoutEffect(() => {
     const el = track.current;
@@ -92,7 +92,8 @@ export function SwipeConfirm({ label, disabled, done, onProgress, onConfirm }: {
   return (
     <motion.div
       ref={track}
-      className={`relative h-16 w-full overflow-hidden rounded-[20px] outline-none focus-visible:ring-2 focus-visible:ring-white ${disabled ? 'glass' : 'glass-blue'}`}
+      className="relative h-14 w-full overflow-hidden rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-white"
+      style={{ background: disabled ? 'var(--surface-2)' : 'var(--primary)' }}
       animate={done ? { opacity: 0, scale: 0.94, filter: 'blur(4px)' } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       onClick={(e) => e.target === e.currentTarget && nudge()}
@@ -110,13 +111,13 @@ export function SwipeConfirm({ label, disabled, done, onProgress, onConfirm }: {
       }}
     >
       {/* the exit: a soft brightening at the right end */}
-      <motion.div className="pointer-events-none absolute inset-y-0 right-0 w-28" style={{ opacity: doorOpacity, background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.32))' }} />
+      <motion.div className="pointer-events-none absolute inset-y-0 right-0 w-28" style={{ opacity: doorOpacity, background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.3))' }} />
       {/* money grains on their way out */}
       <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden />
-      {/* light trail behind the thumb, invisible at rest */}
-      <motion.div className="absolute inset-y-0 left-0 rounded-[20px]" style={{ width: fill, opacity: fillOpacity, background: 'linear-gradient(90deg, rgba(21,32,44,.02), rgba(21,32,44,.14))' }} />
+      {/* progress fill behind the thumb */}
+      <motion.div className="absolute inset-y-0 left-0" style={{ width: fill, opacity: fillOpacity, background: 'rgba(16,24,34,.16)' }} />
       <motion.span
-        className="shimmer pointer-events-none absolute inset-0 grid place-items-center pl-12 text-[16px] font-semibold"
+        className="shimmer pointer-events-none absolute inset-0 grid place-items-center pl-10 text-[16px] font-semibold"
         style={{ opacity: labelOpacity, x: labelX, filter: labelFilter, color: disabled ? 'var(--text-3)' : 'var(--on-primary)' }}
       >
         {label}
@@ -126,15 +127,15 @@ export function SwipeConfirm({ label, disabled, done, onProgress, onConfirm }: {
         tabIndex={-1}
         aria-hidden
         disabled={disabled}
-        className="glass-thumb absolute grid cursor-grab touch-none place-items-center outline-none active:cursor-grabbing"
-        style={{ top: PAD, left: PAD, width: THUMB, height: THUMB, borderRadius: RADIUS - PAD, x, color: disabled ? 'var(--text-3)' : 'var(--primary)' }}
+        className="absolute grid cursor-grab touch-none place-items-center rounded-[10px] outline-none active:cursor-grabbing"
+        style={{ top: PAD, left: PAD, width: THUMB, height: THUMB, x, background: disabled ? 'var(--line)' : 'var(--on-primary)', color: disabled ? 'var(--text-3)' : 'var(--primary)' }}
         drag={disabled ? false : 'x'}
         dragConstraints={{ left: 0, right: max }}
-        dragElastic={0.06}
-        whileTap={disabled ? undefined : { scale: 0.94 }}
-        whileDrag={{ scale: 0.94 }}
-        transition={{ type: 'spring', stiffness: 600, damping: 30 }}
+        dragElastic={0.04}
         dragMomentum={false}
+        whileTap={disabled ? undefined : { scale: 0.95 }}
+        whileDrag={{ scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 600, damping: 30 }}
         onDragEnd={release}
         onTap={() => p.get() < 0.02 && nudge()}
       >
