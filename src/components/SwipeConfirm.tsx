@@ -57,6 +57,9 @@ export function SwipeConfirm({ label, disabled, done, onProgress, onConfirm }: {
     // more grains the faster the drag; a few even for tiny moves
     const n = Math.floor(dx * 0.8) + (Math.random() < dx * 0.3 ? 1 : 0);
     if (n > 0) stream.current?.emit(PAD + THUMB + v - 4, n, dx * 40);
+    // the opposite in the wake: a few slow embers drift back from behind the thumb
+    const m = Math.floor(dx * 0.25) + (Math.random() < dx * 0.12 ? 1 : 0);
+    if (m > 0) stream.current?.wake(PAD + v + 2, m);
   });
 
   useLayoutEffect(() => {
@@ -112,10 +115,10 @@ export function SwipeConfirm({ label, disabled, done, onProgress, onConfirm }: {
     >
       {/* the exit: a soft brightening at the right end */}
       <motion.div className="pointer-events-none absolute inset-y-0 right-0 w-28" style={{ opacity: doorOpacity, background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.3))' }} />
-      {/* money grains on their way out */}
-      <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden />
       {/* progress fill behind the thumb */}
-      <motion.div className="absolute inset-y-0 left-0" style={{ width: fill, opacity: fillOpacity, background: 'rgba(16,24,34,.16)' }} />
+      <motion.div className="absolute inset-y-0 left-0" style={{ width: fill, opacity: fillOpacity, background: 'linear-gradient(90deg, rgba(16,24,34,0) 0%, rgba(16,24,34,.1) 55%, rgba(16,24,34,.2) 100%)' }} />
+      {/* grains: out through the front, embers drifting back in the wake (above the wake shade) */}
+      <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden />
       <motion.span
         className="shimmer pointer-events-none absolute inset-0 grid place-items-center pl-10 text-[16px] font-semibold"
         style={{ opacity: labelOpacity, x: labelX, filter: labelFilter, color: disabled ? 'var(--text-3)' : 'var(--on-primary)' }}

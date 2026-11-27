@@ -13,6 +13,7 @@ interface Grain {
   r: number;
   life: number; // 0..1, fades in then out
   tint: number; // 0 = white, 1 = pale blue
+  ember?: boolean; // behind the thumb: slow, round, drifting backwards — the opposite of the stream
 }
 
 const MAX = 260;
@@ -59,6 +60,27 @@ export class MoneyStream {
     this.kick();
   }
 
+  /**
+   * The wake behind the thumb does the opposite of the front: instead of fast streaks
+   * leaving to the right, soft round embers drift slowly backwards (left) and fade out.
+   */
+  wake(behindX: number, n: number) {
+    if (this.reduced || !this.ctx) return;
+    for (let i = 0; i < n && this.grains.length < MAX; i++) {
+      this.grains.push({
+        x: behindX - Math.random() * 8,
+        y: this.h / 2 + (Math.random() - 0.5) * this.h * 0.62,
+        vx: -(14 + Math.random() * 34),
+        vy: (Math.random() - 0.5) * 10,
+        r: 0.9 + Math.random() * 1.6,
+        life: 1,
+        tint: Math.random() < 0.5 ? 1 : 0,
+        ember: true,
+      });
+    }
+    this.kick();
+  }
+
   /** The swipe landed: one last rush out of the door. */
   burst(fromX: number) {
     this.emit(fromX, 70, 260);
@@ -78,6 +100,22 @@ export class MoneyStream {
     const door = this.w - 6;
     const keep: Grain[] = [];
     for (const g of this.grains) {
+      if (g.ember) {
+        // embers slow down and fade away behind the thumb
+        g.vx *= 1 - dt * 1.4;
+        g.x += g.vx * dt;
+        g.y += g.vy * dt;
+        g.life -= dt * 1.1;
+        if (g.life <= 0 || g.x < -6) continue;
+        keep.push(g);
+        const a = Math.sin(Math.min(1, g.life) * Math.PI * 0.5) * 0.55; // eased fade
+        ctx.globalAlpha = a;
+        ctx.fillStyle = g.tint ? '#cfe2ff' : '#ffffff';
+        ctx.beginPath();
+        ctx.arc(g.x, g.y, g.r * (0.6 + 0.4 * g.life), 0, Math.PI * 2);
+        ctx.fill();
+        continue;
+      }
       g.vx *= 1 + dt * 0.9; // they accelerate toward the exit
       g.x += g.vx * dt;
       g.y += g.vy * dt;
