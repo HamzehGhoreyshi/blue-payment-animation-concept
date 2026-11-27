@@ -20,12 +20,13 @@ function useFrame() {
     const demo = document.documentElement.classList.contains('demo');
     const narrow = window.innerWidth < 600;
     const footer = demo ? 0 : narrow ? 44 : 52;
+    const top = demo || !narrow ? 0 : 52; // phones: a row above the phone for the day/night switch
     // The phone mockup shows everywhere, phones included, scaled to fit with a margin.
     const framed = true;
     const [mx, my] = narrow ? [28, 36] : [48, 64];
     // in the browser the phone sits a little smaller than life size, with room around it
     const cap = demo ? 1 : 0.86;
-    const scale = Math.min(cap, (window.innerHeight - footer - my) / H, (window.innerWidth - mx) / W);
+    const scale = Math.min(cap, (window.innerHeight - footer - top - my) / H, (window.innerWidth - mx) / W);
     return { framed, scale };
   };
   const [f, setF] = useState(calc);
@@ -48,7 +49,7 @@ export default function App() {
         <IslandProvider>
           <ParticleProvider engine={engine}>
             {/* flex (not grid) so the scaled phone centres on the visible area, not its unscaled height */}
-            <div className="flex w-full items-center justify-center overflow-hidden" style={{ height: 'calc(100% - var(--footer-h))' }}>
+            <div className="flex w-full items-center justify-center overflow-hidden" style={{ height: 'calc(100% - var(--footer-h) - var(--top-h))', marginTop: 'var(--top-h)' }}>
               <div
                 id="frame"
                 className={`relative shrink-0 overflow-hidden ${framed ? '' : 'app-mobile h-full w-full'}`}

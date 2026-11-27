@@ -7,15 +7,37 @@ import './index.css';
 // ?demo gives a clean phone frame for recording (no footer).
 if (new URLSearchParams(location.search).has('demo')) document.documentElement.classList.add('demo');
 
-// Footer theme switch: light ↔ dark, remembered, with a smooth colour cross-fade.
-document.querySelector('.theme-toggle')?.addEventListener('click', () => {
+// Day/night switch at the top: night = dark theme, day = light theme. Remembered.
+import './theme-toggle.css';
+const dn = document.querySelector<HTMLButtonElement>('.dn.toggle');
+const syncSwitch = () => {
+  const night = document.documentElement.dataset.theme !== 'light';
+  dn?.setAttribute('aria-checked', String(night));
+  dn?.setAttribute('aria-label', night ? 'Dark mode' : 'Light mode');
+};
+syncSwitch();
+dn?.addEventListener('click', () => {
   const root = document.documentElement;
   const next = root.dataset.theme === 'light' ? 'dark' : 'light';
   root.classList.add('theme-anim');
   root.dataset.theme = next;
   localStorage.setItem('theme', next);
+  syncSwitch();
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', next === 'light' ? '#f4f7fb' : '#1b2028');
   setTimeout(() => root.classList.remove('theme-anim'), 400);
+  // squash-and-stretch on the knob while it travels (from the original toggle)
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    dn.querySelector('.knob')?.animate(
+      [
+        { transform: 'scale(1, 1)' },
+        { transform: 'scale(1.14, .88)', offset: 0.25 },
+        { transform: 'scale(.94, 1.06)', offset: 0.55 },
+        { transform: 'scale(1.02, .98)', offset: 0.75 },
+        { transform: 'scale(1, 1)' },
+      ],
+      { duration: 800, easing: 'ease-out' },
+    );
+  }
 });
 
 // Live GitHub star count in the footer.

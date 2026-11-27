@@ -50,6 +50,7 @@
   --safe-top: 54px;
   --safe-bottom: 22px;
   --footer-h: 52px;
+  --top-h: 0px; /* desktop: the switch sits in the top-left corner, beside the phone */
   /* theme-dependent details */
   --page: #0d1015;
   --status: #ffffff;
@@ -238,21 +239,16 @@ textarea:focus-visible {
 .credits-sig .sig-end { justify-self: end; display: inline-flex; align-items: center; gap: 10px; height: 20px; }
 
 @media (max-width: 600px) {
-  :root { --footer-h: calc(44px + env(safe-area-inset-bottom)); }
+  /* phones have no free corner: a slim row above the phone holds the switch */
+  :root { --footer-h: calc(44px + env(safe-area-inset-bottom)); --top-h: 52px; }
   .credits-sig { padding: 0 16px env(safe-area-inset-bottom); grid-template-columns: auto 1fr; }
   .credits-sig .sig-mid { display: none; }
 }
 
-/* theme switch in the footer */
-.theme-toggle { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 0; background: transparent; color: var(--sig-ink); cursor: pointer; transition: background 0.2s; }
-.theme-toggle:hover { background: var(--sig-line); }
-.theme-toggle svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
-.theme-toggle .sun { display: none; }
-html[data-theme='light'] .theme-toggle .sun { display: block; }
-html[data-theme='light'] .theme-toggle .moon { display: none; }
+
 
 /* ?demo — clean frame for recording: no footer */
-html.demo { --footer-h: 0px; }
+html.demo { --footer-h: 0px; --top-h: 0px; }
 html.demo .credits-sig { display: none; }
 
 /* ------------------------------------------------------------------ */
