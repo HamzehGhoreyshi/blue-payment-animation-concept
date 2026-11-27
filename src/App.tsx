@@ -18,11 +18,14 @@ const H = 844;
 function useFrame() {
   const calc = () => {
     const demo = document.documentElement.classList.contains('demo');
-    const footer = demo ? 0 : 52;
-    const framed = demo || (window.innerWidth >= 600 && window.innerHeight >= 640);
+    const narrow = window.innerWidth < 600;
+    const footer = demo ? 0 : narrow ? 44 : 52;
+    // The phone mockup shows everywhere, phones included, scaled to fit with a margin.
+    const framed = true;
+    const [mx, my] = narrow ? [28, 36] : [48, 64];
     // in the browser the phone sits a little smaller than life size, with room around it
     const cap = demo ? 1 : 0.86;
-    const scale = framed ? Math.min(cap, (window.innerHeight - footer - 64) / H, (window.innerWidth - 48) / W) : 1;
+    const scale = Math.min(cap, (window.innerHeight - footer - my) / H, (window.innerWidth - mx) / W);
     return { framed, scale };
   };
   const [f, setF] = useState(calc);
