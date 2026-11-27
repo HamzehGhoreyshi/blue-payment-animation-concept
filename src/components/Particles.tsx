@@ -66,7 +66,7 @@ export class ParticleEngine {
     const lw = c.offsetWidth || r.width;
     const lh = c.offsetHeight || r.height;
     const shown = r.width / (lw || 1); // frame scale
-    const dpr = Math.min(window.devicePixelRatio || 1, 2) * Math.max(shown, 0.5);
+    const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2) * Math.max(shown, 0.5));
     c.width = Math.round(lw * dpr);
     c.height = Math.round(lh * dpr);
     this.ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -225,7 +225,11 @@ export class ParticleEngine {
     const ctx = this.ctx;
     const c = this.canvas;
     if (!ctx || !c) return;
+    // wipe the whole buffer in device pixels, whatever the drawing scale is
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, c.width, c.height);
+    ctx.restore();
     if (!this.particles.length || (this.p <= 0 && this.a <= 0)) return;
     const τ = (performance.now() - this.t0) / 1000;
     const { p, a, g } = this;
