@@ -1,0 +1,161 @@
+@import 'tailwindcss';
+
+/* Blu Bank dark theme — values sampled from the app screenshots */
+:root {
+  --bg: #1b2028;
+  --surface: #262c37;
+  --surface-2: #2c3340;
+  --line: #333c49;
+  --line-strong: #4c5a69;
+  --text: #e8ecf1;
+  --text-2: #959daa;
+  --text-3: #5f6b78;
+  --primary: #72abf3;
+  --primary-soft: rgba(114, 171, 243, 0.12);
+  --on-primary: #15202c;
+  --success: #5fd39a;
+  --danger: #f27474;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --safe-top: 54px;
+  --safe-bottom: 22px;
+  --footer-h: 52px;
+  color-scheme: dark;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #0d1015;
+  color: var(--text);
+  font-family: 'Vazirmatn Variable', Vazirmatn, Tahoma, sans-serif;
+  font-feature-settings: 'ss01';
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+input {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* text fields show focus on their container, not as a box around the bare input */
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+.field:focus-within {
+  box-shadow: inset 0 0 0 1.5px var(--primary);
+}
+
+.app-mobile {
+  --safe-top: max(env(safe-area-inset-top), 12px);
+  --safe-bottom: 12px;
+}
+
+/* moving highlight across the confirm label */
+.shimmer {
+  background: linear-gradient(100deg, var(--on-primary) 40%, rgba(255, 255, 255, 0.9) 50%, var(--on-primary) 60%) 0 0 / 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2.6s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 125% 0;
+  }
+  to {
+    background-position: -125% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, #364051 50%, var(--surface-2) 75%) 0 0 / 300% 100%;
+  animation: skeleton 1.2s ease-in-out infinite;
+}
+
+@keyframes skeleton {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer,
+  .skeleton {
+    animation: none;
+  }
+  .shimmer {
+    -webkit-text-fill-color: var(--on-primary);
+  }
+}
+
+/* Signature footer bar — same as the other experiments, in this page's dark theme. */
+.credits-sig {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--footer-h);
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 0 60px;
+  background: #0d1015;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  color: #7d8592;
+  white-space: nowrap;
+}
+.credits-sig svg { display: block; flex: none; width: 13px; height: 13px; fill: var(--text); }
+.credits-sig .star-icon { fill: #f3b53f; }
+.credits-sig a { display: inline-flex; align-items: center; gap: 6px; height: 20px; color: inherit; text-decoration: none; border-radius: 6px; transition: opacity 0.2s; }
+.credits-sig a:hover { opacity: 0.7; }
+.credits-sig strong { color: var(--text); font-weight: 600; }
+.credits-sig .dot { opacity: 0.5; }
+.credits-sig .sig-start { justify-self: start; }
+.credits-sig .sig-mid { justify-self: center; }
+.credits-sig .sig-end { justify-self: end; display: inline-flex; align-items: center; gap: 10px; height: 20px; }
+
+@media (max-width: 600px) {
+  :root { --footer-h: calc(44px + env(safe-area-inset-bottom)); }
+  .credits-sig { padding: 0 16px env(safe-area-inset-bottom); grid-template-columns: auto 1fr; }
+  .credits-sig .sig-mid { display: none; }
+}
+
+/* ?demo — clean frame for recording: no footer */
+html.demo { --footer-h: 0px; }
+html.demo .credits-sig { display: none; }
