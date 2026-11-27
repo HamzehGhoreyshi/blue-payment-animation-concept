@@ -23,7 +23,8 @@ function useFrame() {
     const top = demo || !narrow ? 0 : 52; // phones: a row above the phone for the day/night switch
     // The phone mockup shows everywhere, phones included, scaled to fit with a margin.
     const framed = true;
-    const [mx, my] = narrow ? [28, 36] : [48, 64];
+    // recordings: the phone takes ~75% of the video height, with clear space above and below
+    const [mx, my] = demo ? [48, window.innerHeight * 0.25] : narrow ? [28, 36] : [48, 64];
     // in the browser the phone sits a little smaller than life size, with room around it
     const cap = demo ? 1 : 0.86;
     const scale = Math.min(cap, (window.innerHeight - footer - top - my) / H, (window.innerWidth - mx) / W);

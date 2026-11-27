@@ -13,7 +13,7 @@ Project summary lives in: `~/Desktop/AI/ai-os/10_context/projects/blue-payment-a
 - Tech stack: Vite + React 18 + TypeScript + Tailwind v4 + Motion (`motion/react`). Particles on one `<canvas>`. Font: Yekan Bakh FaNum (Blu's typeface; paid, site-only, needs Hamzeh's 6-digit code in public/fonts/yekan-bakh/FontLicense.txt), falling back to Vazirmatn (OFL) when missing.
 - How to run it: `npm install`, then `npm run dev -- --port 5191` (also in `.claude/launch.json` as `blue-payment`).
 - How to deploy it: `vercel --prod` from this Mac → https://blue-payment-animation-concept.vercel.app. GitHub auto-deploy is OFF on purpose: the paid Yekan Bakh fonts (public/fonts/yekan-bakh/, git-ignored, kept from ~/Desktop/Social/RAW/Fonts/YekanBakh Pro) only exist locally, so a Git build would ship without them. Push to GitHub for the code, deploy with the CLI for the site.
-- Videos: `npm i --no-save puppeteer-core && npm run build`, then `node tools/record.mjs <out.mp4> 540 960 4` (social 9:16 4K) or `... 1280 720 3` (README 16:9 4K). `?demo` hides the footer.
+- Videos: `npm i --no-save puppeteer-core && npm run build`, then the commands under Rules → Videos. `?demo` hides the footer and the theme switch.
 - Files:
   - `src/store.tsx` — app state (view, draft, accounts, receipt) and the simulated `submit()`.
   - `src/lib/data.ts` — placeholder data: name «لورم ایپسوم», numbers in the 1234 pattern.
@@ -24,7 +24,10 @@ Project summary lives in: `~/Desktop/AI/ai-os/10_context/projects/blue-payment-a
   - `src/screens/Flow.tsx` (review screen), `Success.tsx`.
 - Rules specific to this project:
   - All visible text Persian with Persian digits.
-  - Videos are always recorded in the white (light) theme (Hamzeh, 2026-11-27). `tools/record.mjs` defaults to it.
+  - Videos (Hamzeh, 2026-11-27, final), all 1080p, macOS pointer (no touch circle), no 4K:
+    - LinkedIn, X, Telegram: 1920×1080, dark — `THEME=dark CURSOR=mouse node tools/record.mjs out.mp4 1280 720 1.5`
+    - Framer website: 1920×1080, white — `THEME=light CURSOR=mouse node tools/record.mjs out.mp4 1280 720 1.5`
+    - Instagram: Story only, 1080×1920, dark — `THEME=dark CURSOR=mouse node tools/record.mjs out.mp4 540 960 2`
   - Hamzeh's rule (2026-11-27): no real-looking names — only «لورم ایپسوم»; all numbers use the 123412341234 pattern. No other Blu screens (copyright risk).
   - Leaving screens are wrapped in `InertWhenLeaving` so taps can't hit a screen that is animating out — keep that for any new screen.
   - Portfolio link (Hamzeh's own public projects, not client sites): the published page must show a visible link to `https://hamzeh.framer.ai/?utm_source=blue-payment-animation-concept&utm_medium=referral`. Check it is there before every deploy.

@@ -13,6 +13,7 @@
 import http from 'node:http';
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import puppeteer from 'puppeteer-core';
 
@@ -52,6 +53,11 @@ page.on('pageerror', (e) => console.error('page error:', e.message));
 
 // ---------- the page's clock, driven from here ----------
 await page.evaluateOnNewDocument(() => {
+  // Motion hands opacity/filter/some transforms to the browser's Web Animations engine, which
+  // runs on REAL time: on a frame-by-frame recording those animations jumped to their end
+  // (title blur-in, the dots and ring around the check…). Without Element.animate, Motion
+  // drives every animation itself from requestAnimationFrame — which this clock controls.
+  delete Element.prototype.animate;
   const realFrame = window.requestAnimationFrame.bind(window);
   let now = 0;
   let frames = [];
@@ -99,7 +105,21 @@ await page.evaluate(() => {
   d.id = 'touch';
   document.body.append(d);
 });
-const setTouch = (x, y, opacity, scale) =>
+// CURSOR=mouse: the macOS pointing hand (desktop videos); otherwise a soft touch dot (phone videos)
+const MOUSE = process.env.CURSOR === 'mouse';
+const HOT = { x: 12, y: 8 }; // pointing-hand hotspot (fingertip)
+if (MOUSE) {
+  const HAND = (await readFile(fileURLToPath(new URL('./assets/pointinghand.png', import.meta.url)))).toString('base64');
+  await page.addStyleTag({ content: `#hand { position: fixed; left: 0; top: 0; width: 32px; height: 32px; z-index: 2147483647; pointer-events: none; transform-origin: ${HOT.x}px ${HOT.y}px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.45)); }` });
+  await page.evaluate((src) => { const i = document.createElement('img'); i.id = 'hand'; i.src = `data:image/png;base64,${src}`; document.body.append(i); return i.decode(); }, HAND);
+}
+let cur = { x: W * 0.74, y: H * 0.66 }; // where the pointer rests before it starts
+const setHand = (x, y, pressed) => {
+  cur = { x, y };
+  return page.evaluate((x, y, s) => { document.getElementById('hand').style.transform = `translate(${x}px, ${y}px) scale(${s})`; }, x - HOT.x, y - HOT.y, pressed ? 0.9 : 1);
+};
+if (MOUSE) await setHand(cur.x, cur.y, false);
+const setTouch = (x, y, opacity, scale) => MOUSE ? setHand(x, y, scale < 0.99) :
   page.evaluate((x, y, o, s) => {
     const d = document.getElementById('touch');
     d.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
@@ -138,6 +158,19 @@ const hold = async (s) => { for (let i = 0, n = Math.round(s * FPS); i < n; i++)
 
 /** Finger fades in at (x, y), slightly large, then settles. */
 async function appear(x, y, s = 0.28) {
+  if (MOUSE) {
+    // the pointer glides to the target like a real mouse, no circle
+    const from = { ...cur };
+    const dist = Math.hypot(x - from.x, y - from.y);
+    const n = Math.max(2, Math.round(Math.min(0.75, Math.max(0.28, dist / 700)) * FPS));
+    for (let i = 1; i <= n; i++) {
+      const k = ease(i / n);
+      await setHand(from.x + (x - from.x) * k, from.y + (y - from.y) * k, false);
+      await page.mouse.move(cur.x, cur.y);
+      await shoot();
+    }
+    return;
+  }
   const n = Math.round(s * FPS);
   for (let i = 1; i <= n; i++) {
     const k = ease(i / n);
@@ -147,6 +180,7 @@ async function appear(x, y, s = 0.28) {
 }
 /** Finger lifts away. */
 async function lift(x, y, s = 0.3) {
+  if (MOUSE) { await setHand(x, y, false); return hold(s); }
   const n = Math.round(s * FPS);
   for (let i = 1; i <= n; i++) {
     const k = ease(i / n);
@@ -181,7 +215,9 @@ async function tap(x, y) {
 
 const THUMB = '[role=button][aria-label*="بکشید"] button';
 
-await hold(1.4); // entrance animations, then a beat on the review screen
+// start with the pointer resting just off the button, so the action begins almost at once
+{ const t0 = await rectOf(THUMB); if (MOUSE) await setHand(t0.x + 70, t0.y + 46, false); }
+await hold(0.5); // entrance animations, then a short beat
 
 // 1 — half swipe and let go: the amount crumbles, then re-forms
 let t = await rectOf(THUMB);
@@ -191,7 +227,7 @@ await hold(0.15);
 const mid = t.x + (track.right - t.x) * 0.55;
 await drag(t.x, mid, t.y, 0.95, 0.35);
 await lift(mid, t.y);
-await hold(1.25);
+await hold(0.7);
 
 // 2 — full swipe
 t = await rectOf(THUMB);
