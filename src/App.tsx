@@ -64,7 +64,7 @@ export default function App() {
                   <HelpSheet />
                   <ParticleCanvas engine={engine} />
                   <Island framed={framed} />
-                  {framed && <span className="pointer-events-none absolute bottom-2 left-1/2 z-50 h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-white/80" />}
+                  {framed && <span className="pointer-events-none absolute bottom-2 left-1/2 z-50 h-[5px] w-[134px] -translate-x-1/2 rounded-full" style={{ background: 'var(--status)', opacity: 0.8 }} />}
                 </ToastProvider>
               </div>
             </div>
@@ -108,12 +108,12 @@ function StatusBar() {
   }, []);
   const time = `${fa(now.getHours())}:${fa(String(now.getMinutes()).padStart(2, '0'))}`;
   return (
-    <div dir="ltr" className="pointer-events-none absolute inset-x-0 top-0 z-50 flex h-[54px] items-center justify-between px-9 pt-1 text-[16px] font-semibold text-white" aria-hidden>
+    <div dir="ltr" className="pointer-events-none absolute inset-x-0 top-0 z-50 flex h-[54px] items-center justify-between px-9 pt-1 text-[16px] font-semibold" style={{ color: 'var(--status)' }} aria-hidden>
       <span className="w-16 text-center">{time}</span>
       <span className="flex w-16 items-center justify-center gap-1.5">
-        <svg width="18" height="12" viewBox="0 0 18 12" fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1" /><rect x="5" y="5.5" width="3" height="6.5" rx="1" /><rect x="10" y="3" width="3" height="9" rx="1" /><rect x="15" y="0" width="3" height="12" rx="1" /></svg>
-        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"><path d="M1.5 4.2a9.5 9.5 0 0 1 13 0M4 7a6 6 0 0 1 8 0" /><circle cx="8" cy="10" r="1.2" fill="#fff" stroke="none" /></svg>
-        <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#fff" strokeOpacity=".5" /><rect x="2.5" y="2.5" width="14" height="8" rx="2" fill="#fff" /><path d="M24.5 4.5v4" stroke="#fff" strokeOpacity=".5" strokeLinecap="round" /></svg>
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="var(--status)"><rect x="0" y="8" width="3" height="4" rx="1" /><rect x="5" y="5.5" width="3" height="6.5" rx="1" /><rect x="10" y="3" width="3" height="9" rx="1" /><rect x="15" y="0" width="3" height="12" rx="1" /></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="var(--status)" strokeWidth="1.8" strokeLinecap="round"><path d="M1.5 4.2a9.5 9.5 0 0 1 13 0M4 7a6 6 0 0 1 8 0" /><circle cx="8" cy="10" r="1.2" fill="var(--status)" stroke="none" /></svg>
+        <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="var(--status)" strokeOpacity=".5" /><rect x="2.5" y="2.5" width="14" height="8" rx="2" fill="var(--status)" /><path d="M24.5 4.5v4" stroke="var(--status)" strokeOpacity=".5" strokeLinecap="round" /></svg>
       </span>
     </div>
   );

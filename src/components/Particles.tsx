@@ -45,6 +45,8 @@ export class ParticleEngine {
   raf = 0;
   running = false;
   reduced = false;
+  /** dust colours follow the theme; read once per capture */
+  colors: [string, string] = ['#e9edf2', '#8ebdf7'];
 
   attach(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -66,6 +68,8 @@ export class ParticleEngine {
   capture(els: HTMLElement[]) {
     if (!this.canvas) return;
     this.resize();
+    const root = getComputedStyle(document.documentElement);
+    this.colors = [root.getPropertyValue('--dust').trim() || '#e9edf2', root.getPropertyValue('--dust-accent').trim() || '#8ebdf7'];
     const host = this.canvas.getBoundingClientRect();
     const scale = host.width / this.canvas.offsetWidth || 1; // phone frame may be scaled
     const out: Particle[] = [];
@@ -238,7 +242,7 @@ export class ParticleEngine {
       }
       if (alpha <= 0.01) continue;
       ctx.globalAlpha = alpha;
-      ctx.fillStyle = q.blue ? '#8EBDF7' : '#E9EDF2';
+      ctx.fillStyle = q.blue ? this.colors[1] : this.colors[0];
       const s = q.size * (1 - 0.25 * e) * shrink;
       ctx.fillRect(x, y, s, s);
     }

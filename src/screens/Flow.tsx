@@ -170,7 +170,7 @@ function ReviewStep() {
               <motion.div className="h-px" style={{ background: 'var(--line)' }} {...stagger(2)} />
               <div className="px-4 pb-5 pt-5">
                 <motion.div {...stagger(3)} className="mb-3 text-[15px] font-semibold">انتقال از</motion.div>
-                <motion.button {...stagger(4)} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 500, damping: 32 }} onClick={() => setSheet('account')} aria-haspopup="dialog" className="press flex w-full items-center gap-4 rounded-[14px] p-4 text-right" style={{ background: 'var(--surface-2)' }}>
+                <motion.button {...stagger(4)} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 500, damping: 32 }} onClick={() => setSheet('account')} aria-haspopup="dialog" className="card press flex w-full items-center gap-4 rounded-[14px] p-4 text-right" style={{ background: 'var(--surface-2)' }}>
                   <BluMark size={52} />
                   <span className="flex-1">
                     <span className="block text-[16px] font-semibold">{s.account.name}</span>
@@ -186,7 +186,7 @@ function ReviewStep() {
                   </motion.p>
                 )}
 
-                <motion.dl {...stagger(5)} className="rows mt-5 rounded-[14px] px-4" style={{ background: 'var(--surface)' }}>
+                <motion.dl {...stagger(5)} className="card rows mt-5 rounded-[14px] px-4" style={{ background: 'var(--surface)' }}>
                   {rows.map(([k, v]) => (
                     <div key={k} className="flex items-center justify-between py-[13px] text-[14px]" >
                       <dt style={{ color: 'var(--text-2)' }}>{k}</dt>

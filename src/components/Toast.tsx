@@ -22,7 +22,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={msg.id}
               role="status"
               className="rounded-full px-4 py-2.5 text-center text-[13px]"
-              style={{ background: '#eef2f7', color: 'var(--on-primary)', boxShadow: '0 10px 30px rgba(0,0,0,.35)' }}
+              style={{ background: 'var(--toast-bg)', color: 'var(--toast-fg)', boxShadow: '0 10px 30px rgba(0,0,0,.25)' }}
               initial={{ opacity: 0, scale: 0.96, filter: 'blur(4px)' }}
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
               exit={{ opacity: 0, scale: 0.98, filter: 'blur(4px)' }}

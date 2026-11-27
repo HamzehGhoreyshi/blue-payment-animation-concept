@@ -53,7 +53,7 @@ export function Success() {
           </motion.div>
         </div>
 
-        <motion.div {...rise(1.05)} className="mt-8 rounded-[16px] p-4" style={{ background: 'var(--surface)' }}>
+        <motion.div {...rise(1.05)} className="card mt-8 rounded-[16px] p-4" style={{ background: 'var(--surface)' }}>
           <div className="flex items-center gap-3">
             <Avatar recipient={rc.recipient} size={44} />
             <div className="min-w-0 flex-1">
@@ -131,7 +131,7 @@ function SuccessBadge() {
             <motion.span
               key={i}
               className="absolute h-1 w-1 rounded-full"
-              style={{ background: i % 3 ? '#e9edf2' : 'var(--primary)', left: '50%', top: '50%', marginLeft: -2, marginTop: -2 }}
+              style={{ background: i % 3 ? 'var(--dust)' : 'var(--primary)', left: '50%', top: '50%', marginLeft: -2, marginTop: -2 }}
               initial={{ x: Math.cos(a) * 160, y: Math.sin(a) * 160 - 120, opacity: 0, scale: 0.6 }}
               animate={{ x: [Math.cos(a) * 160, Math.cos(a) * 52, Math.cos(a) * 64], y: [Math.sin(a) * 160 - 120, Math.sin(a) * 52, Math.sin(a) * 64], opacity: [0, 1, 0], scale: [0.6, 1, 0.4] }}
               transition={{ duration: 1.2, delay: i * 0.015, times: [0, 0.5, 1], ease: EASE_OUT }}

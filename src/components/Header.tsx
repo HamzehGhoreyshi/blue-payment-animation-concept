@@ -36,7 +36,7 @@ export function PrimaryButton({ children, disabled, onClick }: { children: React
       disabled={disabled}
       onClick={onClick}
       whileTap={disabled ? undefined : { scale: 0.97 }}
-      animate={{ backgroundColor: disabled ? '#2c3340' : '#72abf3', color: disabled ? '#5f6b78' : '#15202c' }}
+      style={{ background: disabled ? 'var(--line)' : 'var(--primary)', color: disabled ? 'var(--text-3)' : 'var(--on-primary)', transition: 'background-color .25s, color .25s' }}
       transition={{ duration: 0.25 }}
       className="h-14 w-full rounded-[14px] text-[16px] font-semibold"
     >

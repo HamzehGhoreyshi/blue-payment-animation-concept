@@ -11,7 +11,7 @@ export function Avatar({ recipient, size = 44, layoutId, badge = true }: { recip
   const b = Math.round(size * 0.42);
   return (
     <motion.div layoutId={layoutId} className="relative shrink-0" style={{ width: size, height: size }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
-      <svg viewBox="0 0 48 48" width={size} height={size} aria-hidden className="rounded-full" style={{ background: 'var(--surface-2)', boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,.12)' }}>
+      <svg viewBox="0 0 48 48" width={size} height={size} aria-hidden className="rounded-full" style={{ background: 'var(--surface-2)', boxShadow: 'inset 0 0 0 0.5px var(--ring)' }}>
         <defs>
           <linearGradient id={`g${id}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor={c1} />
