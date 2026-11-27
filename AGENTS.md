@@ -24,6 +24,7 @@ Project summary lives in: `~/Desktop/AI/ai-os/10_context/projects/blue-payment-a
   - `src/screens/Flow.tsx` (review screen), `Success.tsx`.
 - Rules specific to this project:
   - All visible text Persian with Persian digits.
+  - Videos are always recorded in the white (light) theme (Hamzeh, 2026-11-27). `tools/record.mjs` defaults to it.
   - Hamzeh's rule (2026-11-27): no real-looking names — only «لورم ایپسوم»; all numbers use the 123412341234 pattern. No other Blu screens (copyright risk).
   - Leaving screens are wrapped in `InertWhenLeaving` so taps can't hit a screen that is animating out — keep that for any new screen.
   - Portfolio link (Hamzeh's own public projects, not client sites): the published page must show a visible link to `https://hamzeh.framer.ai/?utm_source=blue-payment-animation-concept&utm_medium=referral`. Check it is there before every deploy.

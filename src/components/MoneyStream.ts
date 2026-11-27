@@ -26,6 +26,8 @@ export class MoneyStream {
   private raf = 0;
   private last = 0;
   reduced = false;
+  /** right edge of the thumb, in canvas px: front grains must stay ahead of it */
+  thumbRight = 0;
 
   attach(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d');
@@ -50,7 +52,7 @@ export class MoneyStream {
       this.grains.push({
         x: fromX + Math.random() * 6,
         y: this.h / 2 + (Math.random() - 0.5) * this.h * 0.5,
-        vx: 90 + Math.random() * 160 + push * 0.6,
+        vx: 90 + Math.random() * 160 + push * 1.15,
         vy: (Math.random() - 0.5) * 30,
         r: 0.5 + Math.random() * 0.9,
         life: 0,
@@ -69,9 +71,9 @@ export class MoneyStream {
     for (let i = 0; i < n && this.grains.length < MAX; i++) {
       this.grains.push({
         x: behindX - Math.random() * 8,
-        y: this.h / 2 + (Math.random() - 0.5) * this.h * 0.62,
+        y: this.h * (0.18 + Math.random() * 0.64),
         vx: -(14 + Math.random() * 34),
-        vy: (Math.random() - 0.5) * 10,
+        vy: (Math.random() - 0.5) * 36 - 4,
         r: 0.9 + Math.random() * 1.6,
         life: 1,
         tint: Math.random() < 0.5 ? 1 : 0,
@@ -103,6 +105,7 @@ export class MoneyStream {
       if (g.ember) {
         // embers slow down and fade away behind the thumb
         g.vx *= 1 - dt * 1.4;
+        g.vy *= 1 - dt * 1.2;
         g.x += g.vx * dt;
         g.y += g.vy * dt;
         g.life -= dt * 1.1;
@@ -114,6 +117,16 @@ export class MoneyStream {
         ctx.beginPath();
         ctx.arc(g.x, g.y, g.r * (0.6 + 0.4 * g.life), 0, Math.PI * 2);
         ctx.fill();
+        continue;
+      }
+      // safety net: a streak the thumb has overtaken becomes a soft ember, never a leftover line
+      if (g.x < this.thumbRight - 2) {
+        g.ember = true;
+        g.vx = -(10 + Math.random() * 26);
+        g.vy = (Math.random() - 0.5) * 30;
+        g.life = 0.7;
+        g.r = 0.8 + Math.random() * 1.2;
+        keep.push(g);
         continue;
       }
       g.vx *= 1 + dt * 0.9; // they accelerate toward the exit

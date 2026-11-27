@@ -53,10 +53,11 @@ export function SwipeConfirm({ label, disabled, done, onProgress, onConfirm }: {
   useMotionValueEvent(x, 'change', (v) => {
     const dx = v - lastX.current;
     lastX.current = v;
+    if (stream.current) stream.current.thumbRight = PAD + THUMB + v;
     if (dx <= 0 || disabled) return; // only while moving toward the exit
     // more grains the faster the drag; a few even for tiny moves
     const n = Math.floor(dx * 0.8) + (Math.random() < dx * 0.3 ? 1 : 0);
-    if (n > 0) stream.current?.emit(PAD + THUMB + v - 4, n, dx * 40);
+    if (n > 0) stream.current?.emit(PAD + THUMB + v + 2, n, dx * 60); // dx per frame × 60 ≈ thumb speed
     // the opposite in the wake: a few slow embers drift back from behind the thumb
     const m = Math.floor(dx * 0.25) + (Math.random() < dx * 0.12 ? 1 : 0);
     if (m > 0) stream.current?.wake(PAD + v + 2, m);

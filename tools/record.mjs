@@ -84,7 +84,8 @@ await page.evaluateOnNewDocument(() => {
   };
 });
 
-await page.goto(`${origin}/?demo`, { waitUntil: 'networkidle0' });
+// Videos are filmed in the white (light) theme — Hamzeh's rule. THEME=dark to override.
+await page.goto(`${origin}/?demo&theme=${process.env.THEME || 'light'}`, { waitUntil: 'networkidle0' });
 await page.evaluate(() => document.fonts.ready);
 
 // The finger: a soft translucent touch dot, positioned by this script every frame.
